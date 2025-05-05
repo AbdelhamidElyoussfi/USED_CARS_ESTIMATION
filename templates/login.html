@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Smart Car Price Estimator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+    
+    .hero-image {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 50%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.3;
+        background: linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.8)), 
+            url('https://images.unsplash.com/photo-1595758379321-5b7d6c14c204?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        background-size: cover;
+        background-position: center;
+        clip-path: polygon(100px 0, 100% 0, 100% 100%, 0 100%);
+        animation: fadeIn 1s ease-in-out;
+    }
+    
+    .login-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        max-width: 500px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(67, 97, 238, 0.15), rgba(114, 9, 183, 0.15));
+        z-index: -1;
+    }
+    
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .login-card__header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .login-card__title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(45deg, var(--primary-light), var(--secondary-light));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .login-card__subtitle {
+        color: var(--gray-color);
+        font-size: 1rem;
+    }
+    
+    .social-login {
+        margin-bottom: 1.5rem;
+    }
+    
+    .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .social-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s ease;
+    }
+    
+    .social-btn:hover::before {
+        left: 100%;
+    }
+    
+    .google-btn {
+        background: #fff;
+        color: #444;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .google-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .test-btn {
+        background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .test-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(114, 9, 183, 0.3);
+    }
+    
+    .login-separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+        color: var(--gray-color);
+    }
+    
+    .login-separator::before,
+    .login-separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .login-separator::before {
+        margin-right: 0.5rem;
+    }
+    
+    .login-separator::after {
+        margin-left: 0.5rem;
+    }
+    
+    .feature-cards {
+        margin-top: 4rem;
+    }
+    
+    .feature-card {
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-color: rgba(67, 97, 238, 0.3);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    .feature-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+    
+    .feature-text {
+        color: var(--gray-color);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    /* Right side content styles */
+    .model-visualization {
+        position: relative;
+        height: 100%;
+        min-height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .model-diagram {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 450px;
+        backdrop-filter: blur(10px);
+        position: relative;
+    }
+    
+    .model-diagram::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(67, 97, 238, 0.15), rgba(114, 9, 183, 0.15));
+        border-radius: 20px;
+        z-index: -1;
+    }
+    
+    .model-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    .model-section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .model-section-icon {
+        margin-right: 8px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        font-size: 0.8rem;
+    }
+    
+    .model-flow {
+        position: relative;
+        padding-left: 25px;
+    }
+    
+    .model-flow::before {
+        content: '';
+        position: absolute;
+        left: 11px;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .model-step {
+        position: relative;
+        padding-bottom: 1rem;
+        padding-left: 15px;
+    }
+    
+    .model-step::before {
+        content: '';
+        position: absolute;
+        left: -15px;
+        top: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary-color);
+    }
+    
+    .model-step-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0.25rem;
+    }
+    
+    .model-step-desc {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .tech-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.6rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 992px) {
+        .hero-image {
+            width: 100%;
+            clip-path: none;
+        }
+        
+        .model-visualization {
+            margin-top: 3rem;
+            min-height: 350px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="hero-image"></div>
+    
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
+                <h1 class="display-4 fw-bold mb-4">Smart Car <span class="gradient-text">Price Estimator</span></h1>
+                <p class="lead text-white-50 mb-5">Professional vehicle valuation based on comprehensive feature analysis and damage assessment using machine learning technology.</p>
+                
+                <div class="login-card mx-0">
+                    <div class="login-card__header">
+                        <h2 class="login-card__title">Welcome Back</h2>
+                        <p class="login-card__subtitle">Sign in to access your car estimations</p>
+                    </div>
+                    
+                    <div class="social-login">
+                        <a href="{{ url_for('login_google') }}" class="social-btn google-btn w-100 mb-3">
+                            <i class="fab fa-google"></i> Continue with Google
+                        </a>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="small text-muted">
+                            By continuing, you agree to our <a href="#" class="text-decoration-none">Terms</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technical Approach Visualization -->
+            <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <div class="model-visualization">
+                    <div class="model-diagram">
+                        <div class="model-section">
+                            <div class="model-section-title">
+                                <div class="model-section-icon">1</div>
+                                Feature-Based Car Valuation
+                            </div>
+                            <div class="model-flow">
+                                <div class="model-step">
+                                    <div class="model-step-title">Vehicle Parameters Analysis</div>
+                                    <div class="model-step-desc">Analyzing brand, model, year, mileage, and other specifications from our database of 10,000+ vehicles.</div>
+                                </div>
+                                <div class="model-step">
+                                    <div class="model-step-title">Feature Engineering</div>
+                                    <div class="model-step-desc">Creating compound features like Power-Age Ratio and Feature Importance Weighting for improved accuracy.</div>
+                                </div>
+                                <div class="model-step">
+                                    <div class="model-step-title">ML Model Prediction</div>
+                                    <div class="model-step-desc">Applying regression model to determine base market value before damage assessment.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="model-section">
+                            <div class="model-section-title">
+                                <div class="model-section-icon">2</div>
+                                Computer Vision Damage Analysis
+                            </div>
+                            <div class="model-flow">
+                                <div class="model-step">
+                                    <div class="model-step-title">Vehicle Damage Detection</div>
+                                    <div class="model-step-desc">Identifying damaged components using deep learning image recognition with VGG16 architecture.</div>
+                                </div>
+                                <div class="model-step">
+                                    <div class="model-step-title">Severity Classification</div>
+                                    <div class="model-step-desc">Categorizing damage severity into minor, moderate, or severe through convolutional neural networks.</div>
+                                </div>
+                                <div class="model-step">
+                                    <div class="model-step-title">Price Adjustment Calculation</div>
+                                    <div class="model-step-desc">Applying calculated depreciation to base value based on damage assessment results.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="mb-2 text-white-50 small">Technologies Used:</div>
+                            <div>
+                                <span class="tech-badge"><i class="fas fa-brain mr-1"></i> TensorFlow</span>
+                                <span class="tech-badge"><i class="fas fa-chart-line mr-1"></i> Scikit-learn</span>
+                                <span class="tech-badge"><i class="fas fa-cogs mr-1"></i> Keras</span>
+                                <span class="tech-badge"><i class="fas fa-database mr-1"></i> NumPy</span>
+                                <span class="tech-badge"><i class="fas fa-image mr-1"></i> OpenCV</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-cards">
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-car-crash"></i>
+                        </div>
+                        <h4 class="feature-title">Damage Assessment</h4>
+                        <p class="feature-text">Advanced computer vision technology identifies and classifies vehicle damage to precisely calculate value depreciation.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h4 class="feature-title">Comprehensive Valuation</h4>
+                        <p class="feature-text">Multi-factor regression model evaluates 20+ vehicle attributes, including critical specifications and market conditions.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h4 class="feature-title">Detailed Reports</h4>
+                        <p class="feature-text">Export professional vehicle valuation documents with complete breakdown of attributes, damage analysis, and final estimate.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add 3D tilt effect to login card
+        const loginCard = document.querySelector('.login-card');
+        
+        if (loginCard) {
+            document.addEventListener('mousemove', function(e) {
+                if (window.innerWidth < 992) return;
+                
+                const rect = loginCard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateY = ((x - centerX) / centerX) * 5;
+                const rotateX = ((centerY - y) / centerY) * 5;
+                
+                loginCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+            });
+            
+            loginCard.addEventListener('mouseleave', function() {
+                loginCard.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(-5px)';
+            });
+        }
+    });
+</script>
+{% endblock %} 

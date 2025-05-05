@@ -1,0 +1,891 @@
+{% extends 'base.html' %}
+
+{% block title %}Car Estimation - Smart Car Price Estimator{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(to bottom, #0f172a, #1e293b);
+        position: relative;
+        overflow-x: hidden;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(#ffffff10 1px, transparent 1px);
+        background-size: 30px 30px;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .estimation-header {
+        padding-top: 45px;
+        position: relative;
+        background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9));
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .estimation-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1));
+        z-index: 0;
+    }
+    
+    .estimation-title {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .estimation-description {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .process-step {
+        display: flex;
+        margin-bottom: 1.5rem;
+        padding: 0.75rem;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+    }
+    
+    .process-step:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .process-step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-right: 1.25rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .process-step-content {
+        flex: 1;
+    }
+    
+    .process-step-title {
+        font-weight: 600;
+        margin-bottom: 0.375rem;
+        font-size: 1.1rem;
+    }
+    
+    .process-step-description {
+        font-size: 0.9rem;
+        color: var(--gray-color);
+    }
+    
+    .form-section {
+        margin-bottom: 2.5rem;
+    }
+    
+    .upload-area {
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 3.5rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.5rem 0;
+    }
+    
+    .upload-area:hover {
+        border-color: var(--primary-color);
+        background: rgba(67, 97, 238, 0.05);
+    }
+    
+    .image-preview {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-check-label {
+        cursor: pointer;
+        padding-left: 0.5rem;
+    }
+    
+    .model-info {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.2s ease;
+    }
+    
+    .model-info:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .card {
+        margin-bottom: 2rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        overflow: hidden;
+        background-color: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        height: 100%;
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    }
+    
+    .card-header {
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(90deg, #4361ee, #3730a3);
+        border-bottom: none;
+    }
+    
+    .card-body {
+        padding: 1.75rem 1.5rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-floating > label {
+        padding-left: 1rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .form-select, .form-control {
+        padding-left: 1rem;
+        height: 3.5rem;
+        background-color: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .form-select:focus, .form-control:focus {
+        background-color: rgba(15, 23, 42, 0.9);
+        border-color: rgba(79, 70, 229, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+        color: white;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select ~ label {
+        color: rgba(255, 255, 255, 0.8);
+        opacity: 0.8;
+    }
+    
+    .card-header .h5 {
+        letter-spacing: 0.02em;
+    }
+    
+    .form-check {
+        padding: 0.75rem 0.5rem;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-check:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .form-check-input {
+        margin-top: 0.25rem;
+    }
+    
+    /* Enhanced checkbox styling to match the screenshot */
+    .form-check.form-switch {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.875rem 1.25rem;
+        margin-bottom: 0.75rem;
+        background-color: rgba(30, 41, 59, 0.7);
+        border-radius: 8px;
+        min-height: 3.5rem;
+    }
+    
+    .form-check.form-switch .form-check-label {
+        margin-right: auto;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        padding-left: 0;
+    }
+    
+    .form-check.form-switch .form-check-input {
+        margin-top: 0;
+        margin-left: 0;
+        width: 3rem;
+        height: 1.5rem;
+        float: right;
+    }
+    
+    /* Enhanced button styles to match the screenshot */
+    .btn-primary {
+        background: linear-gradient(90deg, #4361ee, #4f46e5);
+        border: none;
+        box-shadow: 0 4px 14px rgba(67, 97, 238, 0.4);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        padding: 1rem 2rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.5);
+        background: linear-gradient(90deg, #4f46e5, #4361ee);
+    }
+    
+    .btn-outline-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Update button icons */
+    .btn i {
+        margin-right: 0.75rem;
+    }
+    
+    /* Add more space above the buttons */
+    .form-action-buttons {
+        margin-top: 3.5rem;
+        margin-bottom: 4rem;
+    }
+    
+    /* Fix for toggle switch colors */
+    .form-check-input:checked {
+        background-color: #4361ee;
+        border-color: #4361ee;
+    }
+    
+    /* Animation for sections */
+    @keyframes slideIn {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .animate-section {
+        animation: slideIn 0.5s ease forwards;
+    }
+    
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.25rem 1rem;
+        }
+        
+        .process-step {
+            padding: 0.5rem;
+        }
+        
+        .upload-area {
+            padding: 2rem 1rem;
+        }
+    }
+    
+    .row > [class*="col-"] {
+        margin-bottom: 1.5rem;
+    }
+    
+    .row.card-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .row.card-row > [class*="col-"] {
+        display: flex;
+        margin-bottom: 1.5rem;
+    }
+    
+    .row.card-row .card {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .row.card-row .card-body {
+        flex: 1 1 auto;
+    }
+    
+    /* Adjust form-check spacing */
+    .form-check.form-switch {
+        margin-bottom: 0.65rem;
+    }
+    
+    /* Make the last form-check have no bottom margin */
+    .form-check.form-switch:last-child {
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="estimation-header text-center mb-5">
+        <div class="estimation-title">
+            <h1 class="display-5 fw-bold mb-3 animate-on-scroll" data-animation="fade-in">Vehicle Valuation System</h1>
+        </div>
+        <div class="estimation-description">
+            <p class="text-white-50 animate-on-scroll mb-4" data-animation="fade-in">
+                Our dual-model system combines regression analysis of vehicle specifications with computer vision damage assessment to generate accurate market valuations.
+            </p>
+            
+            <div class="row justify-content-center g-4 mt-4">
+                <div class="col-md-5">
+                    <div class="process-step">
+                        <div class="process-step-number">1</div>
+                        <div class="process-step-content text-start">
+                            <div class="process-step-title">Feature-Based Regression Model</div>
+                            <div class="process-step-description">Analyzes 20+ vehicle parameters to establish baseline market value</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="process-step">
+                        <div class="process-step-number">2</div>
+                        <div class="process-step-content text-start">
+                            <div class="process-step-title">Computer Vision Analysis</div>
+                            <div class="process-step-description">Detects and categorizes damage to calculate appropriate value adjustments</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <form id="estimateForm" method="POST" enctype="multipart/form-data" action="{{ url_for('estimate') }}">
+                <div class="card shadow-lg border-0 rounded-lg mb-5 animate-on-scroll" data-animation="slide-in">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="h5 fw-bold mb-0">
+                            <i class="fas fa-camera me-2"></i> Damage Assessment Input
+                        </h3>
+                        <div class="model-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Computer vision model using VGG16 architecture for damage detection and severity classification">
+                            <i class="fas fa-info"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" name="car_image" id="carImage" accept="image/*" class="d-none" required>
+                            <i class="fas fa-cloud-upload-alt fa-3x mb-4 text-primary"></i>
+                            <h4 class="mb-3">Drag & Drop Vehicle Image Here</h4>
+                            <p class="text-muted mb-0">Upload clear images showing vehicle damage for optimal analysis</p>
+                            <img id="imagePreview" class="image-preview mt-4" style="display: none;" alt="Car Preview">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row card-row">
+                    <div class="col-md-6">
+                        <div class="card shadow-lg border-0 rounded-lg mb-4 animate-on-scroll" data-animation="slide-in">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="h5 fw-bold mb-0">
+                                    <i class="fas fa-car me-2"></i> Vehicle Specifications
+                                </h3>
+                                <div class="model-info" data-bs-toggle="tooltip" data-bs-placement="top" title="These parameters feed into our regression model to establish the base market value">
+                                    <i class="fas fa-info"></i>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="brand" name="brand" required>
+                                                <option value="" selected disabled>Select brand</option>
+                                                {% for brand in brands %}
+                                                <option value="{{ brand }}">{{ brand }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="brand">Brand</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="model" name="model" disabled required>
+                                                <option value="" selected disabled>Select brand first</option>
+                                            </select>
+                                            <label for="model">Model</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="year" name="year" required>
+                                                <option value="" selected disabled>Select year</option>
+                                                {% for year in years %}
+                                                <option value="{{ year }}">{{ year }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="year">Year</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="condition" name="condition" required>
+                                                <option value="" selected disabled>Select condition</option>
+                                                {% for condition in conditions %}
+                                                <option value="{{ condition }}">{{ condition }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="condition">Condition</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="mileage" name="mileage" placeholder="Mileage" step="0.01" required>
+                                            <label for="mileage">Mileage (km)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="gearbox" name="gearbox" required>
+                                                <option value="" selected disabled>Select gearbox</option>
+                                                {% for gearbox in gearboxes %}
+                                                <option value="{{ gearbox }}">{{ gearbox }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="gearbox">Gearbox</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="fiscal_power" name="fiscal_power" placeholder="Fiscal Power" required>
+                                            <label for="fiscal_power">Fiscal Power</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="fuel" name="fuel" required>
+                                                <option value="" selected disabled>Select fuel type</option>
+                                                {% for fuel in fuels %}
+                                                <option value="{{ fuel }}">{{ fuel }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="fuel">Fuel Type</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="doors" name="doors" required>
+                                                <option value="" selected disabled>Select number of doors</option>
+                                                {% for door in doors %}
+                                                <option value="{{ door }}">{{ door }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="doors">Number of Doors</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="origin" name="origin" required>
+                                                <option value="" selected disabled>Select origin</option>
+                                                {% for origin in origins %}
+                                                <option value="{{ origin }}">{{ origin }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <label for="origin">Origin</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-floating mt-2">
+                                    <select class="form-select" id="first_owner" name="first_owner" required>
+                                        <option value="" selected disabled>Are you the first owner?</option>
+                                        {% for owner in first_owners %}
+                                        <option value="{{ owner }}">{{ owner }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="first_owner">First Owner</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card shadow-lg border-0 rounded-lg mb-4 animate-on-scroll" data-animation="slide-in">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="h5 fw-bold mb-0">
+                                    <i class="fas fa-list-check me-2"></i> Additional Features
+                                </h3>
+                                <div class="model-info" data-bs-toggle="tooltip" data-bs-placement="top" title="These features contribute to feature engineering in our valuation model">
+                                    <i class="fas fa-info"></i>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="rear_camera">Rear Camera</label>
+                                            <input class="form-check-input" type="checkbox" id="rear_camera" name="rear_camera">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="sunroof">Sunroof</label>
+                                            <input class="form-check-input" type="checkbox" id="sunroof" name="sunroof">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="speed_limiter">Speed Limiter</label>
+                                            <input class="form-check-input" type="checkbox" id="speed_limiter" name="speed_limiter">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="leather_seats">Leather Seats</label>
+                                            <input class="form-check-input" type="checkbox" id="leather_seats" name="leather_seats">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="cruise_control">Cruise Control</label>
+                                            <input class="form-check-input" type="checkbox" id="cruise_control" name="cruise_control">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="electric_windows">Electric Windows</label>
+                                            <input class="form-check-input" type="checkbox" id="electric_windows" name="electric_windows">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="navigation">Navigation System/GPS</label>
+                                            <input class="form-check-input" type="checkbox" id="navigation" name="navigation">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="airbags">Airbags</label>
+                                            <input class="form-check-input" type="checkbox" id="airbags" name="airbags">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="air_conditioning">Air Conditioning</label>
+                                            <input class="form-check-input" type="checkbox" id="air_conditioning" name="air_conditioning">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="cd_mp3_bluetooth">CD/MP3/Bluetooth</label>
+                                            <input class="form-check-input" type="checkbox" id="cd_mp3_bluetooth" name="cd_mp3_bluetooth">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="esp">ESP</label>
+                                            <input class="form-check-input" type="checkbox" id="esp" name="esp">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="alloy_wheels">Alloy Wheels</label>
+                                            <input class="form-check-input" type="checkbox" id="alloy_wheels" name="alloy_wheels">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="central_locking">Central Locking</label>
+                                            <input class="form-check-input" type="checkbox" id="central_locking" name="central_locking">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="abs">ABS</label>
+                                            <input class="form-check-input" type="checkbox" id="abs" name="abs">
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <label class="form-check-label" for="onboard_computer">Onboard Computer</label>
+                                            <input class="form-check-input" type="checkbox" id="onboard_computer" name="onboard_computer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-3 col-md-6 mx-auto mb-5 form-action-buttons animate-on-scroll" data-animation="fade-in">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-file-invoice me-2"></i> GENERATE VALUATION REPORT
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-history me-2"></i> VIEW PREVIOUS VALUATIONS
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Upload area functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const carImage = document.getElementById('carImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const estimateForm = document.querySelector('form');
+        const submitButton = document.querySelector('button[type="submit"]');
+        
+        // Create loading overlay but don't add it to the DOM yet
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center';
+        loadingOverlay.style.backgroundColor = 'rgba(15, 23, 42, 0.8)';
+        loadingOverlay.style.zIndex = '9999';
+        loadingOverlay.style.display = 'none';
+        
+        const spinner = document.createElement('div');
+        spinner.className = 'd-flex flex-column align-items-center';
+        spinner.innerHTML = `
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="text-white">Processing car damage assessment...</h5>
+            <p class="text-white-50">This may take a few moments</p>
+        `;
+        
+        loadingOverlay.appendChild(spinner);
+        
+        // Only add click event to submit button
+        if (submitButton) {
+            submitButton.addEventListener('click', function(e) {
+                // Check if form is valid before showing loading overlay
+                const form = this.closest('form');
+                
+                // Only proceed if form is valid and an image was uploaded
+                if (form && form.checkValidity() && carImage.files.length > 0) {
+                    // Add the overlay to the DOM only when needed
+                    document.body.appendChild(loadingOverlay);
+                    
+                    // Show loading overlay
+                    loadingOverlay.style.display = 'flex';
+                    
+                    // Let form submission proceed normally after a small delay
+                    // This ensures the overlay is displayed before the form submits
+                    setTimeout(() => {
+                        // The form will submit naturally
+                    }, 100);
+                } else if (carImage.files.length === 0) {
+                    // Alert user if no image was uploaded
+                    alert('Please upload an image of your car');
+                    e.preventDefault(); // Prevent form submission
+                }
+                // If the form is invalid, browser validation will handle it
+            });
+        }
+        
+        uploadArea.addEventListener('click', function() {
+            carImage.click();
+        });
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('border-primary');
+        });
+        
+        uploadArea.addEventListener('dragleave', function() {
+            uploadArea.classList.remove('border-primary');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('border-primary');
+            
+            if (e.dataTransfer.files.length) {
+                carImage.files = e.dataTransfer.files;
+                displayPreview(e.dataTransfer.files[0]);
+            }
+        });
+        
+        carImage.addEventListener('change', function() {
+            if (this.files.length) {
+                displayPreview(this.files[0]);
+            }
+        });
+        
+        function displayPreview(file) {
+            if (file.type.match('image.*')) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Dropdown relationships for cascading filters
+        // Parse the JSON data from the server-side template
+        const dropdownRelationships = JSON.parse('{{ dropdown_relationships|tojson|safe }}');
+        const brandModels = JSON.parse('{{ brand_models|tojson|safe }}');
+        
+        // Setup event listeners for all select elements that have dependent dropdowns
+        for (const parentField in dropdownRelationships) {
+            const parentElement = document.getElementById(parentField);
+            if (parentElement) {
+                parentElement.addEventListener('change', function() {
+                    updateDependentDropdowns(parentField, this.value);
+                });
+            }
+        }
+        
+        // Function to update all dependent dropdowns when a parent dropdown changes
+        function updateDependentDropdowns(parentField, selectedValue) {
+            // Get all fields that depend on the changed field
+            const dependentFields = dropdownRelationships[parentField] || [];
+            
+            // Special case for brand-model relationship (uses local data)
+            if (parentField === 'brand' && dependentFields.includes('model')) {
+                const modelSelect = document.getElementById('model');
+                
+                // Enable model select
+                modelSelect.disabled = false;
+                
+                // Clear current options
+                modelSelect.innerHTML = '<option value="" selected disabled>Select model</option>';
+                
+                // Add new options based on brand selection
+                if (brandModels[selectedValue]) {
+                    brandModels[selectedValue].forEach(function(model) {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        modelSelect.appendChild(option);
+                    });
+                }
+            }
+            
+            // For other dependent fields, fetch options from server
+            dependentFields.forEach(function(field) {
+                // Skip model field as it's already handled above for brand changes
+                if (parentField === 'brand' && field === 'model') {
+                    return;
+                }
+                
+                const fieldElement = document.getElementById(field);
+                if (!fieldElement) return;
+                
+                // Collect all current filter values
+                const filters = {};
+                filters[parentField] = selectedValue;
+                
+                // Also add values from other parent fields that might affect this field
+                for (const otherParent in dropdownRelationships) {
+                    if (dropdownRelationships[otherParent].includes(field)) {
+                        const otherParentElement = document.getElementById(otherParent);
+                        if (otherParentElement && otherParentElement.value) {
+                            filters[otherParent] = otherParentElement.value;
+                        }
+                    }
+                }
+                
+                // Fetch filtered options from server
+                fetchFilteredOptions(field, filters);
+            });
+        }
+        
+        // Function to fetch filtered options from server for a target field
+        function fetchFilteredOptions(targetField, filters) {
+            const fieldElement = document.getElementById(targetField);
+            if (!fieldElement) return;
+            
+            // Build query string from filters
+            const params = new URLSearchParams();
+            for (const key in filters) {
+                params.append(key, filters[key]);
+            }
+            params.append('target_field', targetField === 'doors' ? 'Number of Doors' : 
+                           targetField === 'first_owner' ? 'First Owner' : targetField);
+            
+            // Show loading state
+            fieldElement.disabled = true;
+            
+            // Fetch options from server
+            fetch(`/api/filtered-options?${params.toString()}`)
+                .then(response => response.json())
+                .then(options => {
+                    // Clear current options
+                    const currentValue = fieldElement.value;
+                    fieldElement.innerHTML = '<option value="" selected disabled>Select option</option>';
+                    
+                    // Add new options
+                    options.forEach(function(option) {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        
+                        // Restore selected value if it exists in new options
+                        if (option == currentValue) {
+                            optionElement.selected = true;
+                        }
+                        
+                        fieldElement.appendChild(optionElement);
+                    });
+                    
+                    // Enable select
+                    fieldElement.disabled = false;
+                })
+                .catch(error => {
+                    console.error(`Error fetching options for ${targetField}:`, error);
+                    fieldElement.disabled = false;
+                });
+        }
+    });
+</script>
+{% endblock %} 

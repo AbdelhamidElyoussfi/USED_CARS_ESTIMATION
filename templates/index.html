@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Smart Car Price Estimator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        padding: 5rem 0;
+    }
+    
+    .hero-graphics {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 45%;
+        height: 100%;
+        z-index: -1;
+    }
+    
+    .hero-graphics__image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: url('https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1650&q=80');
+        background-size: cover;
+        background-position: center;
+        mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0));
+        -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0));
+        opacity: 0.2;
+    }
+    
+    .hero-accent {
+        position: absolute;
+        bottom: -50px;
+        left: -100px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        filter: blur(120px);
+        z-index: -1;
+        opacity: 0.4;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--gray-color);
+        margin-bottom: 2.5rem;
+        max-width: 90%;
+    }
+    
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+    
+    .hero-feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-feature__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(67, 97, 238, 0.15);
+        color: var(--primary-color);
+        margin-right: 1rem;
+    }
+    
+    .features-section {
+        padding: 8rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .features-title {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    
+    .feature-card {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        border-color: rgba(67, 97, 238, 0.3);
+    }
+    
+    .feature-card__image {
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card__image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7);
+        transition: all 0.5s ease;
+    }
+    
+    .feature-card:hover .feature-card__image img {
+        transform: scale(1.1);
+        filter: brightness(0.9);
+    }
+    
+    .feature-card__icon {
+        position: absolute;
+        bottom: -25px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-card__body {
+        padding: 2rem;
+        padding-top: 1.5rem;
+    }
+    
+    .feature-card__title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card__text {
+        color: var(--gray-color);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .tech-section {
+        padding: 6rem 0;
+        background: rgba(15, 23, 42, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .tech-section::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1));
+        z-index: -1;
+    }
+    
+    .tech-card {
+        padding: 2rem;
+        border-radius: 20px;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .tech-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .tech-card__header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .tech-card__icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .tech-card__title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        background: linear-gradient(45deg, var(--primary-light), var(--secondary-light));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .tech-card__subtitle {
+        font-size: 0.9rem;
+        color: var(--gray-color);
+    }
+    
+    .tech-card__content {
+        margin-left: 4rem;
+    }
+    
+    .tech-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .tech-item {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--gray-color);
+        font-size: 0.95rem;
+    }
+    
+    .tech-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.5rem;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .tech-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.7rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .tech-badge i {
+        margin-right: 0.3rem;
+        font-size: 0.75rem;
+    }
+    
+    .cta-section {
+        padding: 6rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.8)), 
+                    url('https://images.unsplash.com/photo-1590674899484-d5640e854abe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        filter: brightness(0.7);
+        z-index: -1;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cta-text {
+        font-size: 1.2rem;
+        color: var(--gray-color);
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .btn-cta {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.5);
+    }
+    
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 3rem;
+        }
+        
+        .hero-graphics {
+            width: 100%;
+            opacity: 0.1;
+        }
+        
+        .hero-cta {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-accent"></div>
+    <div class="hero-graphics">
+        <div class="hero-graphics__image"></div>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8" data-aos="fade-right" data-aos-duration="1000">
+                <h1 class="hero-title">Smart AI <span class="gradient-text">Car Price</span> Estimator</h1>
+                <p class="hero-subtitle">Professional vehicle valuation platform combining advanced machine learning for feature-based pricing and computer vision technology for damage assessment.</p>
+                
+                <div class="hero-cta">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('estimate') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calculator me-2"></i> Start Estimation
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-th-large me-2"></i> View Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login to Start
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <div class="hero-features">
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="hero-feature__text">Multi-factor vehicle analysis with 20+ parameters</div>
+                    </div>
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="hero-feature__text">Computer vision damage detection with severity classification</div>
+                    </div>
+                    <div class="hero-feature">
+                        <div class="hero-feature__icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="hero-feature__text">Comprehensive valuation reports with full attribution</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="features-title" data-aos="fade-up">
+            <h2 class="display-5 fw-bold mb-3">Estimation <span class="gradient-text">Process</span></h2>
+            <p class="text-muted">Our comprehensive three-stage valuation methodology</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-card__image">
+                        <img src="https://images.unsplash.com/photo-1657427946660-e11bcd2bed47?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80" alt="Upload your car photo">
+                        <div class="feature-card__icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="feature-card__body">
+                        <h3 class="feature-card__title">1. Parameter Collection</h3>
+                        <p class="feature-card__text">Input vehicle specifications and upload imagery for analysis. Our system processes multiple image angles for comprehensive damage detection.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-card__image">
+                        <img src="https://images.unsplash.com/photo-1581092921461-7384466992df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80" alt="AI Damage Analysis">
+                        <div class="feature-card__icon">
+                            <i class="fas fa-car-crash"></i>
+                        </div>
+                    </div>
+                    <div class="feature-card__body">
+                        <h3 class="feature-card__title">2. Dual-Model Analysis</h3>
+                        <p class="feature-card__text">Our system performs parallel processing: feature-based regression modeling for base valuation and computer vision analysis for damage detection.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-card__image">
+                        <img src="https://images.unsplash.com/photo-1554224155-1696413565d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=580&q=80" alt="Get Your Estimation">
+                        <div class="feature-card__icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="feature-card__body">
+                        <h3 class="feature-card__title">3. Comprehensive Valuation</h3>
+                        <p class="feature-card__text">The system combines both analyses to produce a final valuation with adjustments for damage severity, including detailed rationale for all pricing factors.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technical Section - Replacing Stats -->
+<section class="tech-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="tech-card">
+                    <div class="tech-card__header">
+                        <div class="tech-card__icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>
+                            <div class="tech-card__title">Feature-Based Valuation Engine</div>
+                            <div class="tech-card__subtitle">Advanced regression modeling</div>
+                        </div>
+                    </div>
+                    <div class="tech-card__content">
+                        <ul class="tech-list">
+                            <li class="tech-item">Comprehensive analysis of 20+ vehicle parameters</li>
+                            <li class="tech-item">Feature engineering with compound variables (Power-Age Ratio, Feature Importance Weighting)</li>
+                            <li class="tech-item">Multi-factor regression model optimized for regional market conditions</li>
+                            <li class="tech-item">Continuous model training with expanding vehicle database</li>
+                        </ul>
+                        <div class="mt-3">
+                            <span class="tech-badge"><i class="fas fa-chart-line"></i> Scikit-learn</span>
+                            <span class="tech-badge"><i class="fas fa-database"></i> NumPy</span>
+                            <span class="tech-badge"><i class="fas fa-table"></i> Pandas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="tech-card">
+                    <div class="tech-card__header">
+                        <div class="tech-card__icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <div class="tech-card__title">Computer Vision Damage Analysis</div>
+                            <div class="tech-card__subtitle">Deep learning image recognition</div>
+                        </div>
+                    </div>
+                    <div class="tech-card__content">
+                        <ul class="tech-list">
+                            <li class="tech-item">Multi-stage damage detection pipeline with VGG16 architecture</li>
+                            <li class="tech-item">Severity classification into minor, moderate, and severe categories</li>
+                            <li class="tech-item">Damage type identification for precise depreciation calculation</li>
+                            <li class="tech-item">Convolutional neural networks trained on automotive damage datasets</li>
+                        </ul>
+                        <div class="mt-3">
+                            <span class="tech-badge"><i class="fas fa-brain"></i> TensorFlow</span>
+                            <span class="tech-badge"><i class="fas fa-cogs"></i> Keras</span>
+                            <span class="tech-badge"><i class="fas fa-image"></i> OpenCV</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10" data-aos="zoom-in">
+                <h2 class="cta-title">Start Your Professional Vehicle Valuation</h2>
+                <p class="cta-text">Our dual-model approach delivers precise market valuations by combining comprehensive vehicle feature analysis with advanced damage assessment technology.</p>
+                
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('estimate') }}" class="btn btn-primary btn-cta">
+                    <i class="fas fa-calculator me-2"></i> Begin Estimation Process
+                </a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-cta">
+                    <i class="fas fa-sign-in-alt me-2"></i> Access Valuation Platform
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

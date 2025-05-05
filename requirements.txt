@@ -1,0 +1,15 @@
+flask
+flask-login
+flask-sqlalchemy
+flask-migrate
+authlib
+numpy
+pandas
+Pillow
+tensorflow
+joblib
+fpdf2
+werkzeug
+python-dotenv
+requests
+matplotlib 

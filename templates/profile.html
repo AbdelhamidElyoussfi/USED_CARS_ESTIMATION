@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Smart Car Price Estimator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-section {
+        padding: 4rem 0;
+    }
+    
+    .profile-header {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .profile-cover {
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-cover::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1283&q=80');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.15;
+        z-index: 1;
+    }
+    
+    .profile-cover::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            0deg,
+            rgba(15, 23, 42, 1) 0%,
+            rgba(15, 23, 42, 0) 100%
+        );
+        z-index: 2;
+    }
+    
+    .profile-details {
+        padding: 2rem;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 3;
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: -80px auto 1.5rem;
+        border: 5px solid rgba(15, 23, 42, 0.8);
+        position: relative;
+        z-index: 4;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-email {
+        color: var(--gray-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .stats-card {
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-color: rgba(67, 97, 238, 0.3);
+    }
+    
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .stats-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--gray-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    
+    .activity-card {
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .activity-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+    
+    .activity-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .activity-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        flex-shrink: 0;
+    }
+    
+    .activity-content {
+        flex-grow: 1;
+    }
+    
+    .activity-text {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .activity-date {
+        font-size: 0.85rem;
+        color: var(--gray-color);
+    }
+    
+    .btn-action {
+        margin-top: 1rem;
+        border-radius: 12px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-action i {
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <div class="profile-header" data-aos="fade-up">
+            <div class="profile-cover"></div>
+            <div class="profile-details">
+                <div class="profile-avatar">
+                    <img src="{{ current_user.profile_pic }}" alt="{{ current_user.name }}">
+                </div>
+                <h1 class="profile-name">{{ current_user.name }}</h1>
+                <p class="profile-email">{{ current_user.email }}</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-action">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('estimate') }}" class="btn btn-secondary btn-action">
+                        <i class="fas fa-plus"></i> New Estimation
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="stats-title">Member Since</h3>
+                    <p class="stats-value">{{ current_user.created_at.strftime('%b %d, %Y') }}</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3 class="stats-title">Total Estimations</h3>
+                    <p class="stats-value">{{ current_user.estimations|length }}</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="stats-title">Login Provider</h3>
+                    <p class="stats-value">{{ current_user.provider|capitalize }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="activity-header">
+                <h3 class="activity-title">Recent Activity</h3>
+                <a href="{{ url_for('dashboard') }}" class="text-decoration-none">View All</a>
+            </div>
+            
+            {% if current_user.estimations|length > 0 %}
+                {% for estimation in current_user.estimations[:3] %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-car-crash"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">Created a price estimation for {{ estimation.brand }} {{ estimation.model }} ({{ estimation.year }})</p>
+                        <p class="activity-date">{{ estimation.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">No estimations yet</p>
+                    <a href="{{ url_for('estimate') }}" class="btn btn-primary btn-sm mt-2">Create Your First Estimation</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %} 

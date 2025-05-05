@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Smart Car Price Estimator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        position: relative;
+        padding: 6rem 0 5rem;
+        overflow: hidden;
+    }
+    
+    .about-hero__bg {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(114, 9, 183, 0.05));
+    }
+    
+    .about-section {
+        padding: 5rem 0;
+    }
+    
+    .about-card {
+        border-radius: 20px;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .about-card__header {
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-card__header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+        );
+        transform: rotate(30deg);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%) rotate(30deg);
+        }
+        100% {
+            transform: translateX(100%) rotate(30deg);
+        }
+    }
+    
+    .about-card__body {
+        padding: 2rem;
+    }
+    
+    .about-card__title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .about-card__subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: var(--light-color);
+        opacity: 0.8;
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin: 3rem 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        border-radius: 2px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1rem;
+    }
+    
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -2.3rem;
+        top: 0.3rem;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+    }
+    
+    .timeline-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--light-color);
+    }
+    
+    .timeline-text {
+        color: var(--gray-color);
+    }
+    
+    .tech-section {
+        margin-top: 3rem;
+    }
+    
+    .tech-card {
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .tech-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-color: rgba(67, 97, 238, 0.3);
+    }
+    
+    .tech-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--primary-light), var(--secondary-light));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .tech-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .tech-text {
+        color: var(--gray-color);
+        font-size: 0.95rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="about-hero__bg"></div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <h1 class="display-4 fw-bold mb-4">About <span class="gradient-text">Smart Car</span> Price Estimator</h1>
+                <p class="lead text-white-50 mb-5">We combine artificial intelligence and computer vision to revolutionize car damage assessment and pricing</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="about-card">
+                    <div class="about-card__header">
+                        <h2 class="about-card__title text-white">Our Mission</h2>
+                        <p class="about-card__subtitle">Bringing transparency and accuracy to car damage assessment</p>
+                    </div>
+                    <div class="about-card__body">
+                        <p>Smart Car Price Estimator is an advanced platform that uses cutting-edge artificial intelligence to assess car damage and estimate vehicle values accurately. Our mission is to provide car owners, insurance companies, and auto shops with a reliable, fast, and objective way to evaluate damaged vehicles.</p>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="100">
+                                <h4 class="timeline-title">Upload Your Car Photo</h4>
+                                <p class="timeline-text">Simply take a photo of your damaged car and upload it to our platform. Our system works with various angles and lighting conditions.</p>
+                            </div>
+                            
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="200">
+                                <h4 class="timeline-title">AI Damage Analysis</h4>
+                                <p class="timeline-text">Our computer vision algorithms automatically detect and classify the type and severity of damage with high accuracy.</p>
+                            </div>
+                            
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="300">
+                                <h4 class="timeline-title">Vehicle Details</h4>
+                                <p class="timeline-text">Enter basic information about your car like make, model, year, and other specifications to enhance price accuracy.</p>
+                            </div>
+                            
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="400">
+                                <h4 class="timeline-title">Price Calculation</h4>
+                                <p class="timeline-text">Our sophisticated algorithms calculate the estimated value based on the car's details and damage assessment.</p>
+                            </div>
+                            
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="500">
+                                <h4 class="timeline-title">Detailed Report</h4>
+                                <p class="timeline-text">Receive a comprehensive PDF report with all estimation details that you can download and share.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-5">
+                <div class="tech-section">
+                    <h3 class="gradient-text mb-4" data-aos="fade-left">Our Technology</h3>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="tech-card">
+                                <div class="tech-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <h4 class="tech-title">Neural Networks</h4>
+                                <p class="tech-text">We employ deep convolutional neural networks trained on thousands of car damage images.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="tech-card">
+                                <div class="tech-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <h4 class="tech-title">Computer Vision</h4>
+                                <p class="tech-text">Advanced image processing techniques help identify damage patterns accurately.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6" data-aos="zoom-in" data-aos-delay="300">
+                            <div class="tech-card">
+                                <div class="tech-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h4 class="tech-title">Predictive Models</h4>
+                                <p class="tech-text">Our price estimation uses machine learning algorithms trained on real market data.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6" data-aos="zoom-in" data-aos-delay="400">
+                            <div class="tech-card">
+                                <div class="tech-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <h4 class="tech-title">Extensive Dataset</h4>
+                                <p class="tech-text">Our models are trained on diverse datasets covering various car makes, models, and damage types.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-5" data-aos="fade-up">
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-rocket me-2"></i> Get Started Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 
