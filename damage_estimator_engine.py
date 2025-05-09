@@ -106,34 +106,48 @@ def car_categories_gate(img_path, model):
     try:
         if img_path.startswith(('http://', 'https://')):
             img_data = get_image_from_url(img_path)
-            # Display the image (but don't show in web context)
-            print("Image received:")
-            # Skip displaying in web context
-            # display_image(img_data)
-
-            # Prepare for prediction
             x = prepare_image_from_data(img_data)
         else:
-            # Handle local file
-            print("Image received:")
-            # Skip displaying in web context
-            # display_image(img_path)
             x = prepare_image(img_path)
 
         out = model.predict(x, verbose=0)
         top = get_predictions(out, top=5)
-
+        
+        # Print top predictions for debugging
+        print("Top predictions:", top[0])
+        
+        max_confidence = 0.0
+        detected_category = None
+        
+        # Check all top 5 predictions for car categories
         for j in top[0]:
             if j[0:2] in cat_list:
-                print(f"Detected car category: {j[0]}")
-                return True
-
-        print("⚠ Are you sure this is a picture of your car? Please take another picture (try a different angle or lighting) and try again.")
-        return False
+                confidence = float(j[2])  # Convert from numpy float to Python float
+                print(f"Found car category: {j[0]} with confidence: {confidence:.2%}")
+                if confidence > max_confidence:
+                    max_confidence = confidence
+                    detected_category = j[0]
+        
+        # Lower threshold to 15% but add cumulative confidence check
+        CONFIDENCE_THRESHOLD = 0.15  # 15% threshold
+        
+        if max_confidence > CONFIDENCE_THRESHOLD:
+            print(f"✓ Car detected as {detected_category} with {max_confidence:.2%} confidence")
+            return True
+        else:
+            if detected_category:
+                print(f"⚠ Car detected but confidence too low: {max_confidence:.2%}")
+            else:
+                print("⚠ No car detected in the image")
+            return False
 
     except Exception as e:
         print(f"Error in car validation: {str(e)}")
         return False
+
+class UnclearDamageImageError(Exception):
+    """Exception raised when the damage in the image is not clear enough for validation."""
+    pass
 
 def car_damage_gate(img_path, model, target_size=(224, 224)):
     print("Validating that damage exists...")
@@ -157,17 +171,22 @@ def car_damage_gate(img_path, model, target_size=(224, 224)):
 
         print(f"Damage probability: {damage_probability:.2%}")
 
-        # Check if this is the correct interpretation
-        # If damage_probability represents "probability of NO damage",
-        # then we want to return True when it's <= 0.5
-        if damage_probability <= 0.5:
-            print("✓ Validation complete - damage detected, proceeding to severity determination")
+        # Add confidence thresholds for damage detection
+        DAMAGE_THRESHOLD = 0.4  # Threshold for damage detection
+        UNCLEAR_THRESHOLD = 0.45  # Threshold for unclear cases
+
+        if damage_probability <= DAMAGE_THRESHOLD:
+            print("✓ Clear damage detected")
             return True
+        elif damage_probability <= UNCLEAR_THRESHOLD:
+            print("⚠ Damage detection uncertain")
+            raise UnclearDamageImageError("The damage in the image is not clear enough. Please submit a clearer image of the damaged area.")
         else:
-            print("⚠ No damage detected in this image. Please submit a picture that clearly shows the car damage.")
-            print("Hint: Try zooming in to the damaged area, using a different angle or better lighting")
+            print("⚠ No clear damage detected")
             return False
 
+    except UnclearDamageImageError:
+        raise
     except Exception as e:
         print(f"Error processing image: {str(e)}")
         return False
@@ -228,8 +247,7 @@ def engine():
         # Step 1: Verify this is a car
         g1 = car_categories_gate(img_path, first_gate)
         if not g1:
-            print("\nCar validation failed. Please try again with a different image.")
-            continue
+            raise UnclearDamageImageError("Car validation failed. Please try again with a different image.\nHint: Try zooming in to the damaged area, using a different angle or better lighting")
 
         # Step 2: Verify damage exists
         g2 = car_damage_gate(img_path, second_gate)

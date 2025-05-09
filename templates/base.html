@@ -44,6 +44,13 @@
             --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             --transition: all 0.3s ease;
             --border-radius: 16px;
+            --scroll-behavior: smooth;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         body {
@@ -54,6 +61,27 @@
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--dark-color);
+        }
+        
+        *::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        *::-webkit-scrollbar-track {
+            background: var(--dark-color);
+        }
+        
+        *::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 20px;
+            border: 2px solid var(--dark-color);
         }
         
         .animated-bg {
@@ -82,14 +110,7 @@
             animation: blob-float-1 20s infinite ease-in-out;
         }
         
-        .animated-bg__blob:nth-child(2) {
-            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
-            width: 600px;
-            height: 600px;
-            bottom: -300px;
-            right: -100px;
-            animation: blob-float-2 25s infinite ease-in-out;
-        }
+        
         
         .animated-bg__blob:nth-child(3) {
             background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
@@ -392,11 +413,6 @@
                             <div class="avatar">
                                 <img src="{{ current_user.profile_pic }}" alt="{{ current_user.name }}">
                             </div>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
                         </a>
                     </li>
                     {% else %}

@@ -114,6 +114,7 @@
         cursor: pointer;
         transition: all 0.3s ease;
         margin: 0.5rem 0;
+        position: relative;
     }
     
     .upload-area:hover {
@@ -127,6 +128,23 @@
         border-radius: 8px;
         margin-top: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        object-fit: contain;
+        display: none;
+    }
+
+    .upload-area.has-preview {
+        padding: 1rem;
+    }
+
+    .upload-area.has-preview .image-preview {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .upload-area.has-preview .fa-cloud-upload-alt,
+    .upload-area.has-preview h4,
+    .upload-area.has-preview p {
+        display: none;
     }
     
     .form-check-label {
@@ -424,7 +442,7 @@
                             <i class="fas fa-cloud-upload-alt fa-3x mb-4 text-primary"></i>
                             <h4 class="mb-3">Drag & Drop Vehicle Image Here</h4>
                             <p class="text-muted mb-0">Upload clear images showing vehicle damage for optimal analysis</p>
-                            <img id="imagePreview" class="image-preview mt-4" style="display: none;" alt="Car Preview">
+                            <img id="imagePreview" class="image-preview" alt="Car Preview">
                         </div>
                     </div>
                 </div>
@@ -474,7 +492,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select class="form-select" id="condition" name="condition" required>
+                                            <select class="form-select static-select" id="condition" name="condition" required>
                                                 <option value="" selected disabled>Select condition</option>
                                                 {% for condition in conditions %}
                                                 <option value="{{ condition }}">{{ condition }}</option>
@@ -502,12 +520,6 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="number" class="form-control" id="fiscal_power" name="fiscal_power" placeholder="Fiscal Power" required>
-                                            <label for="fiscal_power">Fiscal Power</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
                                             <select class="form-select" id="fuel" name="fuel" required>
                                                 <option value="" selected disabled>Select fuel type</option>
                                                 {% for fuel in fuels %}
@@ -517,6 +529,15 @@
                                             <label for="fuel">Fuel Type</label>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="fiscal_power" name="fiscal_power" required>
+                                                <option value="" selected disabled>Select fiscal power</option>
+                                            </select>
+                                            <label for="fiscal_power">Fiscal Power</label>
+                                        </div>
+                                    </div>
+                                
                                     <div class="col-md-6">
                                         <div class="form-floating">
                                             <select class="form-select" id="doors" name="doors" required>
@@ -530,7 +551,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select class="form-select" id="origin" name="origin" required>
+                                            <select class="form-select static-select" id="origin" name="origin" required>
                                                 <option value="" selected disabled>Select origin</option>
                                                 {% for origin in origins %}
                                                 <option value="{{ origin }}">{{ origin }}</option>
@@ -542,7 +563,7 @@
                                 </div>
                                 
                                 <div class="form-floating mt-2">
-                                    <select class="form-select" id="first_owner" name="first_owner" required>
+                                    <select class="form-select static-select" id="first_owner" name="first_owner" required>
                                         <option value="" selected disabled>Are you the first owner?</option>
                                         {% for owner in first_owners %}
                                         <option value="{{ owner }}">{{ owner }}</option>
@@ -764,6 +785,7 @@
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                     imagePreview.style.display = 'block';
+                    uploadArea.classList.add('has-preview');
                 }
                 
                 reader.readAsDataURL(file);
@@ -784,6 +806,20 @@
                 });
             }
         }
+        
+        // Initialize all dropdowns - call this when page loads
+        function initializeDropdowns() {
+            // For each dropdown with a selected value, update its dependent dropdowns
+            for (const parentField in dropdownRelationships) {
+                const parentElement = document.getElementById(parentField);
+                if (parentElement && parentElement.value) {
+                    updateDependentDropdowns(parentField, parentElement.value);
+                }
+            }
+        }
+        
+        // Call initialization after a short delay to ensure DOM is fully ready
+        setTimeout(initializeDropdowns, 100);
         
         // Function to update all dependent dropdowns when a parent dropdown changes
         function updateDependentDropdowns(parentField, selectedValue) {
@@ -811,7 +847,7 @@
                 }
             }
             
-            // For other dependent fields, fetch options from server
+            // For all dependent fields, fetch filtered options from server
             dependentFields.forEach(function(field) {
                 // Skip model field as it's already handled above for brand changes
                 if (parentField === 'brand' && field === 'model') {
@@ -819,18 +855,21 @@
                 }
                 
                 const fieldElement = document.getElementById(field);
-                if (!fieldElement) return;
+                // Skip if element not found or if it's a static select
+                if (!fieldElement || fieldElement.classList.contains('static-select')) {
+                    return;
+                }
                 
                 // Collect all current filter values
                 const filters = {};
-                filters[parentField] = selectedValue;
                 
-                // Also add values from other parent fields that might affect this field
-                for (const otherParent in dropdownRelationships) {
-                    if (dropdownRelationships[otherParent].includes(field)) {
-                        const otherParentElement = document.getElementById(otherParent);
-                        if (otherParentElement && otherParentElement.value) {
-                            filters[otherParent] = otherParentElement.value;
+                // Add values from all parent fields that might affect this field
+                // Get all possible parent fields that can affect this field
+                for (const potentialParent in dropdownRelationships) {
+                    if (dropdownRelationships[potentialParent].includes(field)) {
+                        const parentElement = document.getElementById(potentialParent);
+                        if (parentElement && parentElement.value) {
+                            filters[potentialParent] = parentElement.value;
                         }
                     }
                 }
@@ -843,15 +882,17 @@
         // Function to fetch filtered options from server for a target field
         function fetchFilteredOptions(targetField, filters) {
             const fieldElement = document.getElementById(targetField);
-            if (!fieldElement) return;
+            // Skip if element not found or if it's a static select
+            if (!fieldElement || fieldElement.classList.contains('static-select')) {
+                return;
+            }
             
             // Build query string from filters
             const params = new URLSearchParams();
             for (const key in filters) {
                 params.append(key, filters[key]);
             }
-            params.append('target_field', targetField === 'doors' ? 'Number of Doors' : 
-                           targetField === 'first_owner' ? 'First Owner' : targetField);
+            params.append('target_field', targetField);
             
             // Show loading state
             fieldElement.disabled = true;
@@ -886,6 +927,51 @@
                     fieldElement.disabled = false;
                 });
         }
+
+        // Get the fiscal power select element
+        const fiscalPowerSelect = document.getElementById('fiscal_power');
+        const brandSelect = document.getElementById('brand');
+        const modelSelect = document.getElementById('model');
+        
+        // Parse the brand-model-fiscal data from the server
+        const brandModelFiscal = JSON.parse('{{ brand_model_fiscal|tojson|safe }}');
+        
+        // Function to update fiscal power options
+        function updateFiscalPowerOptions() {
+            const selectedBrand = brandSelect.value;
+            const selectedModel = modelSelect.value;
+            
+            // Clear current options
+            fiscalPowerSelect.innerHTML = '<option value="" selected disabled>Select fiscal power</option>';
+            
+            // If both brand and model are selected
+            if (selectedBrand && selectedModel && brandModelFiscal[selectedBrand] && brandModelFiscal[selectedBrand][selectedModel]) {
+                const fiscalPowers = brandModelFiscal[selectedBrand][selectedModel];
+                
+                // Add new options
+                fiscalPowers.forEach(power => {
+                    const option = document.createElement('option');
+                    option.value = power;
+                    option.textContent = power;
+                    fiscalPowerSelect.appendChild(option);
+                });
+                
+                // Enable the select
+                fiscalPowerSelect.disabled = false;
+            } else {
+                // Disable the select if brand or model is not selected
+                fiscalPowerSelect.disabled = true;
+            }
+        }
+        
+        // Add event listeners
+        brandSelect.addEventListener('change', function() {
+            // Clear and disable fiscal power when brand changes
+            fiscalPowerSelect.innerHTML = '<option value="" selected disabled>Select fiscal power</option>';
+            fiscalPowerSelect.disabled = true;
+        });
+        
+        modelSelect.addEventListener('change', updateFiscalPowerOptions);
     });
 </script>
 {% endblock %} 

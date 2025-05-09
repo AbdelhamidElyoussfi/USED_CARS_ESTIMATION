@@ -74,7 +74,7 @@ The application will be available at `http://localhost:5000`
 ├── damage_analyzer_engine.py  # Damage analysis ML model
 ├── price_estimation_ML.py  # Price estimation ML model
 ├── requirements.txt        # Python dependencies
-├── models/                 # ML model files
+├── models/                 # ML & deep learning models
 ├── static/                 # Static assets
 │   ├── css/                # CSS styles
 │   ├── js/                 # JavaScript files

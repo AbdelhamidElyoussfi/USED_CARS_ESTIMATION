@@ -232,7 +232,7 @@
         </div>
         
         <div class="row g-4">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
                 <div class="stats-card">
                     <div class="stats-icon">
                         <i class="fas fa-history"></i>
@@ -241,7 +241,7 @@
                     <p class="stats-value">{{ current_user.created_at.strftime('%b %d, %Y') }}</p>
                 </div>
             </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
                 <div class="stats-card">
                     <div class="stats-icon">
                         <i class="fas fa-car"></i>
@@ -250,42 +250,14 @@
                     <p class="stats-value">{{ current_user.estimations|length }}</p>
                 </div>
             </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="stats-card">
-                    <div class="stats-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <h3 class="stats-title">Login Provider</h3>
-                    <p class="stats-value">{{ current_user.provider|capitalize }}</p>
-                </div>
-            </div>
+        </div>
+
+        <div class="mt-4 text-center" data-aos="fade-up" data-aos-delay="300">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger btn-lg btn-action">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
         
-        <div class="activity-card" data-aos="fade-up" data-aos-delay="400">
-            <div class="activity-header">
-                <h3 class="activity-title">Recent Activity</h3>
-                <a href="{{ url_for('dashboard') }}" class="text-decoration-none">View All</a>
-            </div>
-            
-            {% if current_user.estimations|length > 0 %}
-                {% for estimation in current_user.estimations[:3] %}
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas fa-car-crash"></i>
-                    </div>
-                    <div class="activity-content">
-                        <p class="activity-text">Created a price estimation for {{ estimation.brand }} {{ estimation.model }} ({{ estimation.year }})</p>
-                        <p class="activity-date">{{ estimation.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="text-center py-4">
-                    <p class="text-muted">No estimations yet</p>
-                    <a href="{{ url_for('estimate') }}" class="btn btn-primary btn-sm mt-2">Create Your First Estimation</a>
-                </div>
-            {% endif %}
-        </div>
     </div>
 </section>
 {% endblock %} 

@@ -29,7 +29,10 @@ import requests
 import secrets
 
 # Import the ML models
-from damage_estimator_engine import car_categories_gate, car_damage_gate, severity_estimator, first_gate, second_gate, severity_model
+from damage_estimator_engine import (
+    car_categories_gate, car_damage_gate, severity_estimator, 
+    first_gate, second_gate, severity_model, UnclearDamageImageError
+)
 from price_estimation_ML import predict_car_price, scaler, model as ml_model, encoding_dicts, cars_data
 
 # Initialize Flask app
@@ -137,15 +140,15 @@ def load_user(user_id):
 
 # Helper Functions
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def generate_pdf_report(estimation):
     pdf = FPDF()
     pdf.add_page()
     
-    # Add header with logo
-    pdf.set_font('Arial', 'B', 16)
+    # Use built-in Helvetica font instead of DejaVu Sans
+    pdf.set_font('Helvetica', 'B', 16)
     pdf.cell(0, 10, 'Smart Car Price Estimation Report', 0, 1, 'C')
     pdf.line(10, 30, 200, 30)
     pdf.ln(10)
@@ -161,7 +164,7 @@ def generate_pdf_report(estimation):
             pdf.set_fill_color(200, 200, 200)
             pdf.rect(10, 40, 80, 60, style='F')
             pdf.set_xy(25, 65)
-            pdf.set_font('Arial', 'I', 12)
+            pdf.set_font('Helvetica', 'I', 12)
             pdf.cell(50, 10, 'Image not available', 0, 1, 'C')
     else:
         # Add a placeholder
@@ -169,15 +172,15 @@ def generate_pdf_report(estimation):
         pdf.set_fill_color(200, 200, 200)
         pdf.rect(10, 40, 80, 60, style='F')
         pdf.set_xy(25, 65)
-        pdf.set_font('Arial', 'I', 12)
+        pdf.set_font('Helvetica', 'I', 12)
         pdf.cell(50, 10, 'Image not available', 0, 1, 'C')
     
     # Car details section
     pdf.set_xy(100, 40)
-    pdf.set_font('Arial', 'B', 12)
+    pdf.set_font('Helvetica', 'B', 12)
     pdf.cell(0, 10, 'Car Details', 0, 1)
     
-    pdf.set_font('Arial', '', 10)
+    pdf.set_font('Helvetica', '', 10)
     pdf.set_xy(100, 50)
     pdf.cell(40, 10, 'Brand:', 0, 0)
     pdf.cell(0, 10, estimation.brand, 0, 1)
@@ -196,15 +199,23 @@ def generate_pdf_report(estimation):
     
     pdf.set_xy(100, 90)
     pdf.cell(40, 10, 'Mileage:', 0, 0)
-    pdf.cell(0, 10, f"{estimation.mileage} km", 0, 1)
+    pdf.cell(0, 10, f"{estimation.mileage:,.0f} km", 0, 1)
     
-    # Price section
+    pdf.set_xy(100, 100)
+    pdf.cell(40, 10, 'Gearbox:', 0, 0)
+    pdf.cell(0, 10, estimation.gearbox, 0, 1)
+    
+    pdf.set_xy(100, 110)
+    pdf.cell(40, 10, 'Fuel:', 0, 0)
+    pdf.cell(0, 10, estimation.fuel, 0, 1)
+    
+    # Price section with improved formatting
     pdf.ln(20)
     pdf.set_xy(10, 130)
-    pdf.set_font('Arial', 'B', 12)
+    pdf.set_font('Helvetica', 'B', 12)
     pdf.cell(0, 10, 'Price Estimation', 0, 1)
     
-    pdf.set_font('Arial', '', 10)
+    pdf.set_font('Helvetica', '', 10)
     pdf.set_xy(10, 140)
     pdf.cell(80, 10, 'Damage Severity:', 0, 0)
     
@@ -219,17 +230,23 @@ def generate_pdf_report(estimation):
         pdf.set_text_color(0, 100, 255)  # Blue for no damage
         
     pdf.cell(0, 10, estimation.damage_severity if estimation.damage_severity else 'No Damage Detected', 0, 1)
-    pdf.set_text_color(0, 0, 0)  # Reset text color
+    pdf.set_text_color(0, 0, 0)
     
     if estimation.base_price > 0:
+        # Format prices with proper spacing and rounding
+        base_min = ((estimation.base_price - 5000) // 100 * 100)
+        base_max = ((estimation.base_price + 5000) // 100 * 100)
+        adj_min = ((estimation.adjusted_price - 5000) // 100 * 100)
+        adj_max = ((estimation.adjusted_price + 5000) // 100 * 100)
+        
         pdf.set_xy(10, 150)
-        pdf.cell(80, 10, 'Base Price Estimation:', 0, 0)
-        pdf.cell(0, 10, f"{estimation.base_price:,.2f} DH", 0, 1)
+        pdf.cell(80, 10, 'Base Price Range:', 0, 0)
+        pdf.cell(0, 10, f"{base_min:,.0f} - {base_max:,.0f} DH", 0, 1)
         
         pdf.set_xy(10, 160)
-        pdf.set_font('Arial', 'B', 12)
-        pdf.cell(80, 10, 'Final Adjusted Price:', 0, 0)
-        pdf.cell(0, 10, f"{estimation.adjusted_price:,.2f} DH", 0, 1)
+        pdf.set_font('Helvetica', 'B', 12)
+        pdf.cell(80, 10, 'Final Price Range:', 0, 0)
+        pdf.cell(0, 10, f"{adj_min:,.0f} - {adj_max:,.0f} DH", 0, 1)
     else:
         pdf.set_xy(10, 150)
         pdf.set_text_color(255, 0, 0)  # Red for error
@@ -237,12 +254,57 @@ def generate_pdf_report(estimation):
         pdf.set_text_color(0, 0, 0)  # Reset text color
         
         pdf.set_xy(10, 160)
-        pdf.set_font('Arial', '', 10)
+        pdf.set_font('Helvetica', '', 10)
         pdf.cell(0, 10, 'Please try again with different parameters or contact support.', 0, 1)
+    
+    # Car Features section with improved symbols
+    pdf.ln(20)
+    pdf.set_xy(10, 180)
+    pdf.set_font('Helvetica', 'B', 12)
+    pdf.cell(0, 10, 'Car Features', 0, 1)
+    
+    pdf.set_font('Helvetica', '', 10)
+    
+    feature_y = 190
+    features_col1 = [
+        ('Rear Camera', estimation.rear_camera),
+        ('Air Conditioning', estimation.air_conditioning),
+        ('Sunroof', estimation.sunroof),
+        ('Navigation', estimation.navigation),
+        ('Electric Windows', estimation.electric_windows)
+    ]
+    
+    features_col2 = [
+        ('ABS', estimation.abs),
+        ('Cruise Control', estimation.cruise_control),
+        ('Leather Seats', estimation.leather_seats),
+        ('Alloy Wheels', estimation.alloy_wheels),
+        ('ESP', estimation.esp)
+    ]
+    
+    for i, (feature, has_feature) in enumerate(features_col1):
+        pdf.set_xy(10, feature_y + (i * 8))
+        if has_feature:
+            pdf.set_text_color(0, 150, 0)  # Green for yes
+            pdf.cell(80, 8, f"[+] {feature}", 0, 0)
+        else:
+            pdf.set_text_color(150, 150, 150)  # Gray for no
+            pdf.cell(80, 8, f"[-] {feature}", 0, 0)
+        pdf.set_text_color(0, 0, 0)  # Reset text color
+    
+    for i, (feature, has_feature) in enumerate(features_col2):
+        pdf.set_xy(100, feature_y + (i * 8))
+        if has_feature:
+            pdf.set_text_color(0, 150, 0)  # Green for yes
+            pdf.cell(80, 8, f"[+] {feature}", 0, 0)
+        else:
+            pdf.set_text_color(150, 150, 150)  # Gray for no
+            pdf.cell(80, 8, f"[-] {feature}", 0, 0)
+        pdf.set_text_color(0, 0, 0)  # Reset text color
     
     # Footer
     pdf.set_y(-30)
-    pdf.set_font('Arial', 'I', 8)
+    pdf.set_font('Helvetica', 'I', 8)
     pdf.cell(0, 10, f'Generated on {estimation.created_at.strftime("%Y-%m-%d %H:%M")}', 0, 1, 'C')
     pdf.cell(0, 10, 'Thank you for using our Smart Car Price Estimation service!', 0, 1, 'C')
     
@@ -439,7 +501,19 @@ def estimate():
                         is_car = car_categories_gate(image_path, first_gate)
                         print(f"Image classification: {is_car}")
                         
-                        if is_car:  # The function returns True if it's a car
+                        if not is_car:  # If it's not a car, handle it immediately
+                            flash("The uploaded image does not appear to be a car. Please upload a clear image of a vehicle.", "warning")
+                            # Clean up the uploaded file since it's not valid
+                            try:
+                                if os.path.exists(image_path):
+                                    os.remove(image_path)
+                                    print(f"Removed invalid image: {image_path}")
+                            except Exception as e:
+                                print(f"Error removing invalid image: {str(e)}")
+                            return redirect(url_for('estimate'))
+
+                        # Only proceed with damage assessment if it's a car
+                        try:
                             is_damaged = car_damage_gate(image_path, second_gate)
                             print(f"Damage detection: {is_damaged}")
                             
@@ -454,11 +528,18 @@ def estimate():
                                     damage_severity = 'Minor'
                             else:
                                 damage_severity = 'None'
-                        else:
-                            damage_severity = 'Unknown (Not a car)'
+                        except UnclearDamageImageError as e:
+                            flash(str(e), "warning")
+                            return redirect(url_for('estimate'))
                     except Exception as e:
                         print(f"Error in damage detection: {str(e)}")
-                        damage_severity = 'Error in processing'
+                        flash("An error occurred while processing the image. Please try again with a different image.", "warning")
+                        try:
+                            if os.path.exists(image_path):
+                                os.remove(image_path)
+                        except Exception as cleanup_error:
+                            print(f"Error removing image after processing error: {str(cleanup_error)}")
+                        return redirect(url_for('estimate'))
             
             # Set fallback default base price
             base_price = 0  # Default to 0 to indicate error
@@ -510,9 +591,9 @@ def estimate():
                 if damage_severity == 'Minor':
                     adjusted_price = base_price * 0.90  # 10% discount
                 elif damage_severity == 'Moderate':
-                    adjusted_price = base_price * 0.75  # 25% discount
+                    adjusted_price = base_price * 0.80  # 20% discount
                 elif damage_severity == 'Severe':
-                    adjusted_price = base_price * 0.60  # 40% discount
+                    adjusted_price = base_price * 0.65  # 35% discount
             
             print(f"Final adjusted price: {adjusted_price} MAD (damage severity: {damage_severity})")
             
@@ -601,6 +682,7 @@ def estimate():
         gearboxes = sorted(df['Gearbox'].unique().tolist())
         fuels = sorted(df['Fuel'].unique().tolist())
         origins = sorted(df['Origin'].unique().tolist())
+        fiscal_powers = sorted(df['Fiscal Power'].unique().tolist())
         
         # Handle numeric door values (convert from float to int)
         doors_values = df['Number of Doors'].unique().tolist()
@@ -618,14 +700,29 @@ def estimate():
         for brand in brands:
             brand_models[brand] = sorted(df[df['Brand'] == brand]['Model'].unique().tolist())
         
+        # Create brand-model-fiscal_power dictionary
+        brand_model_fiscal = {}
+        for brand in brands:
+            brand_model_fiscal[brand] = {}
+            brand_df = df[df['Brand'] == brand]
+            for model in brand_df['Model'].unique():
+                fiscal_powers = sorted(brand_df[brand_df['Model'] == model]['Fiscal Power'].unique().tolist())
+                brand_model_fiscal[brand][model] = fiscal_powers
+        
         # Define dropdown relationships structure expected by the frontend
         dropdown_relationships = {
-            'brand': ['model']
+            'brand': ['model', 'year', 'gearbox', 'fuel', 'doors', 'fiscal_power'],
+            'model': ['year', 'gearbox', 'fuel', 'doors', 'fiscal_power'],
+            'year': ['gearbox', 'fuel', 'doors', 'fiscal_power'],
+            'gearbox': ['fuel', 'doors', 'fiscal_power'],
+            'fuel': ['doors', 'fiscal_power'],
+            'doors': ['fiscal_power']
         }
         
         print(f"Loaded dropdown data: {len(brands)} brands, {len(models)} models")
         print(f"Door options: {doors}")
         print(f"First owner options: {first_owners}")
+        print(f"Fiscal power options: {fiscal_powers}")
     except Exception as e:
         print(f"Error loading car data: {str(e)}")
         import traceback
@@ -641,7 +738,7 @@ def estimate():
         doors = [5]
         first_owners = ['Yes', 'No', 'Unknown']
         brand_models = {}
-        dropdown_relationships = {'brand': ['model']}
+        dropdown_relationships = {'brand': ['model', 'year', 'gearbox', 'fuel', 'doors', 'fiscal_power']}
     
     return render_template('estimate.html', 
                           brands=brands,
@@ -654,7 +751,8 @@ def estimate():
                           doors=doors,
                           first_owners=first_owners,
                           dropdown_relationships=dropdown_relationships,
-                          brand_models=brand_models)
+                          brand_models=brand_models,
+                          brand_model_fiscal=brand_model_fiscal)
 
 @app.route('/api/models/<brand>')
 def get_models(brand):
@@ -730,6 +828,63 @@ def download_report(estimation_id):
         flash(f"Error downloading the report: {str(e)}", "danger")
         return redirect(url_for('estimation_result', estimation_id=estimation.id))
 
+@app.route('/delete_estimation/<int:estimation_id>', methods=['POST'])
+@login_required
+def delete_estimation(estimation_id):
+    """Delete an estimation from the database"""
+    try:
+        # Get the estimation and check if it belongs to the current user
+        estimation = CarEstimation.query.get_or_404(estimation_id)
+        
+        if estimation.user_id != current_user.id:
+            return jsonify({
+                'success': False,
+                'message': 'You do not have permission to delete this estimation'
+            }), 403
+        
+        # Delete associated image and PDF files if they exist
+        if estimation.image_path and os.path.exists(estimation.image_path):
+            try:
+                os.remove(estimation.image_path)
+            except Exception as e:
+                print(f"Error removing image file: {str(e)}")
+                
+        if estimation.pdf_report_path and os.path.exists(estimation.pdf_report_path):
+            try:
+                os.remove(estimation.pdf_report_path)
+            except Exception as e:
+                print(f"Error removing PDF file: {str(e)}")
+        
+        # Delete the estimation from the database
+        db.session.delete(estimation)
+        db.session.commit()
+        
+        # For non-AJAX requests, redirect back to dashboard with success message
+        if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            flash('Estimation successfully deleted', 'success')
+            return redirect(url_for('dashboard'))
+            
+        # For AJAX requests, return JSON response
+        return jsonify({
+            'success': True,
+            'message': 'Estimation deleted successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        error_message = f"Error deleting estimation: {str(e)}"
+        print(error_message)
+        
+        # For non-AJAX requests, redirect with error message
+        if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            flash(error_message, 'danger')
+            return redirect(url_for('dashboard'))
+            
+        # For AJAX requests, return error response
+        return jsonify({
+            'success': False,
+            'message': error_message
+        }), 500
 
 @app.route('/api/filtered-options')
 def get_filtered_options():
@@ -742,6 +897,7 @@ def get_filtered_options():
         column_mapping = {
             'brand': 'Brand',
             'model': 'Model',
+            'year': 'Year',
             'gearbox': 'Gearbox',
             'fuel': 'Fuel',
             'doors': 'Number of Doors',
@@ -773,15 +929,25 @@ def get_filtered_options():
                 # Handle numeric fields that might need type conversion
                 if field == 'Number of Doors' and value.replace('.', '', 1).isdigit():
                     df = df[df[field] == float(value)]
+                elif field == 'Year' and value.isdigit():
+                    df = df[df[field] == int(value)]
+                elif field == 'Fiscal Power' and value.isdigit():
+                    df = df[df[field] == int(value)]
                 else:
                     df = df[df[field] == value]
         
         # Get unique values for the target field
         if column_name in df.columns:
-            # Handle special case for numeric fields (like doors)
+            # Handle special case for numeric fields
             if column_name == 'Number of Doors':
                 door_values = df[column_name].unique().tolist()
                 options = [int(d) for d in door_values if not pd.isna(d)]
+            elif column_name == 'Year':
+                year_values = df[column_name].unique().tolist()
+                options = sorted([int(y) for y in year_values if not pd.isna(y)], reverse=True)
+            elif column_name == 'Fiscal Power':
+                fp_values = df[column_name].unique().tolist()
+                options = sorted([int(fp) for fp in fp_values if not pd.isna(fp)])
             else:
                 options = sorted(df[column_name].unique().tolist())
                 
@@ -807,6 +973,8 @@ def get_filtered_options():
         # Provide fallback values for key fields if there's an error
         if target_field == 'first_owner':
             return jsonify(['Yes', 'No', 'Unknown'])
+        elif target_field == 'year':
+            return jsonify(list(range(2023, 1990, -1)))
         
         return jsonify([])
 

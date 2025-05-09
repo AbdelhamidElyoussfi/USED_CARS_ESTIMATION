@@ -7,7 +7,9 @@
     .dashboard-section {
         padding: 4rem 0;
     }
-    
+    .col-lg-3{
+        height: 100%;
+    }
     .dashboard-header {
         margin-bottom: 3rem;
     }
@@ -150,9 +152,10 @@
         border-radius: 16px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.05);
-        background: rgba(15, 23, 42, 0.3);
+        background: rgba(93, 103, 128, 0.3);
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
     
     .estimation-card:hover {
@@ -167,16 +170,17 @@
     
     .estimation-card__image {
         width: 100%;
-        height: 150px;
+        height: 220px;
         border-radius: 12px;
         overflow: hidden;
         margin-bottom: 1rem;
+        background: rgba(15, 23, 42, 0.5);
     }
     
     .estimation-card__image img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
         transition: all 0.5s ease;
     }
     
@@ -194,6 +198,7 @@
     .estimation-card__title {
         font-weight: 700;
         margin-bottom: 0.25rem;
+        font-size: 1.25rem;
     }
     
     .estimation-card__date {
@@ -206,6 +211,9 @@
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
         margin-bottom: 1.5rem;
+        background: rgba(30, 41, 59, 0.4);
+        border-radius: 12px;
+        padding: 1rem;
     }
     
     .estimation-detail {
@@ -246,11 +254,53 @@
         color: var(--danger-color);
     }
     
+    .badge-severity-none {
+        background: rgba(156, 163, 175, 0.15);
+        color: var(--gray-color);
+    }
+    
     .estimation-card__price {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+    
+    .price-number {
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #5472EA;
+        background: linear-gradient(135deg, #5078ff, #75a8ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .price-suffix {
         font-size: 1.5rem;
         font-weight: 700;
-        margin-bottom: 1rem;
-        background: linear-gradient(45deg, var(--primary-light), var(--secondary-light));
+        line-height: 1;
+        color: #5472EA;
+        background: linear-gradient(135deg, #5078ff, #75a8ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .price-range-dash {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0.25rem;
+        color: #5472EA;
+    }
+    
+    .price-currency {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-left: 0.5rem;
+        color: #5472EA;
+        background: linear-gradient(135deg, #5078ff, #75a8ff);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -259,41 +309,6 @@
     .estimation-card__actions {
         display: flex;
         gap: 0.75rem;
-    }
-    
-    .tip-item {
-        margin-bottom: 1.25rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .tip-item:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-    }
-    
-    .tip-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        margin-bottom: 1rem;
-    }
-    
-    .tip-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    
-    .tip-text {
-        color: var(--gray-color);
-        font-size: 0.9rem;
-        margin-bottom: 0;
     }
 
     .btn-add-new {
@@ -309,8 +324,153 @@
         border-radius: 12px;
         font-size: 0.9rem;
         padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-delete {
+        background: rgba(230, 57, 70, 0.1);
+        border: 1px solid rgba(230, 57, 70, 0.3);
+        color: #e53945;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-delete:hover {
+        background: rgba(230, 57, 70, 0.2);
+        color: #ff3a47;
+    }
+    
+    .estimation-card__image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.7);
+        color: var(--gray-color);
+        font-size: 2rem;
+    }
+    
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        padding: 15px 20px;
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+        max-width: 350px;
+    }
+    
+    .notification.show {
+        transform: translateX(0);
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+    }
+    
+    .notification-content i {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+    
+    .notification-success i {
+        color: #10b981;
+    }
+    
+    .notification-error i {
+        color: #ef4444;
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete(estimationId, carDetails) {
+        if (confirm(`Are you sure you want to delete the estimation for ${carDetails}?`)) {
+            deleteEstimation(estimationId);
+        }
+    }
+    
+    function deleteEstimation(estimationId) {
+        fetch(`/delete_estimation/${estimationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(data => {
+            if (data.success) {
+                // Remove the estimation card from the DOM
+                const card = document.querySelector(`.estimation-card[data-id="${estimationId}"]`);
+                card.parentElement.remove();
+                
+                // Show success message
+                showNotification('Estimation deleted successfully', 'success');
+                
+                // Update estimation count in profile
+                updateEstimationCount();
+            } else {
+                showNotification('Failed to delete estimation: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while deleting the estimation', 'error');
+        });
+    }
+    
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Animate out after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+    
+    function updateEstimationCount() {
+        const countElement = document.querySelector('.profile-stat__value:last-child');
+        if (countElement) {
+            let count = parseInt(countElement.textContent);
+            countElement.textContent = (count - 1).toString();
+        }
+    }
+</script>
 {% endblock %}
 
 {% block content %}
@@ -331,7 +491,7 @@
         </div>
         
         <div class="row g-4">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <div class="dashboard-card" data-aos="fade-up">
                     <div class="dashboard-card__header">
                         <h2 class="dashboard-card__title">
@@ -340,22 +500,29 @@
                     </div>
                     <div class="dashboard-card__body">
                         {% if estimations %}
+                            <div class="row">
                             {% for estimation in estimations %}
-                            <div class="estimation-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
-                                <div class="estimation-card__body">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="estimation-card__image">
-                                                <img src="{{ url_for('static', filename=estimation.image_path.replace('static/', '')) }}" 
-                                                    alt="{{ estimation.brand }} {{ estimation.model }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
+                                <div class="col-lg-6">
+                                    <div class="estimation-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}" data-id="{{ estimation.id }}">
+                                        <div class="estimation-card__body">
                                             <div class="estimation-card__header">
                                                 <div>
                                                     <h3 class="estimation-card__title">{{ estimation.brand }} {{ estimation.model }}</h3>
                                                     <div class="estimation-card__date">{{ estimation.created_at.strftime('%b %d, %Y at %H:%M') }}</div>
                                                 </div>
+                                            </div>
+                                            
+                                            <div class="estimation-card__image">
+                                                {% if estimation.image_path and estimation.image_path != 'None' %}
+                                                    <img src="{{ url_for('static', filename=estimation.image_path.replace('static/', '', 1).replace('\\', '/')) if estimation.image_path else '' }}" 
+                                                         alt="{{ estimation.brand }} {{ estimation.model }}"
+                                                         data-fallback="{{ url_for('static', filename='images/car-placeholder.png') }}"
+                                                         onload="if (this.src=='') this.src=this.getAttribute('data-fallback')">
+                                                {% else %}
+                                                    <div class="estimation-card__image-placeholder">
+                                                        <i class="fas fa-car"></i>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                             
                                             <div class="estimation-card__details">
@@ -378,28 +545,44 @@
                                                             <span class="badge-severity badge-severity-minor">Minor</span>
                                                         {% elif estimation.damage_severity == 'Moderate' %}
                                                             <span class="badge-severity badge-severity-moderate">Moderate</span>
-                                                        {% else %}
+                                                        {% elif estimation.damage_severity == 'Severe' %}
                                                             <span class="badge-severity badge-severity-severe">Severe</span>
+                                                        {% else %}
+                                                            <span class="badge-severity badge-severity-none">No Damage</span>
                                                         {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
                                             
-                                            <div class="estimation-card__price">${{ "%.2f"|format(estimation.adjusted_price) }}</div>
+                                            <div class="estimation-card__price">
+                                                {% set adj_min = ((estimation.adjusted_price - 5000) // 100 * 100)|int %}
+                                                {% set adj_max = ((estimation.adjusted_price + 5000) // 100 * 100)|int %}
+                                                <span class="price-number">{{ (adj_min // 1000)|int }}</span>
+                                                <span class="price-suffix">{{ '%03d' % (adj_min % 1000) }}</span>
+                                                <span class="price-range-dash">-</span>
+                                                <span class="price-number">{{ (adj_max // 1000)|int }}</span>
+                                                <span class="price-suffix">{{ '%03d' % (adj_max % 1000) }}</span>
+                                                <span class="price-currency">DH</span>
+                                            </div>
                                             
                                             <div class="estimation-card__actions">
                                                 <a href="{{ url_for('estimation_result', estimation_id=estimation.id) }}" class="btn btn-outline-primary btn-action">
                                                     <i class="fas fa-eye me-1"></i> View Details
                                                 </a>
                                                 <a href="{{ url_for('download_report', estimation_id=estimation.id) }}" class="btn btn-outline-secondary btn-action">
-                                                    <i class="fas fa-download me-1"></i> Download Report
+                                                    <i class="fas fa-download me-1"></i> Download
                                                 </a>
+                                                <button class="btn btn-delete btn-action" 
+                                                        data-estimation-id="{{ estimation.id }}"
+                                                        onclick="confirmDelete('{{ estimation.id }}', '{{ estimation.brand }} {{ estimation.model }}')">
+                                                    <i class="fas fa-trash-alt me-1"></i> Remove
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             {% endfor %}
+                            </div>
                         {% else %}
                             <div class="estimation-empty" data-aos="fade-up">
                                 <div class="estimation-empty__icon">
@@ -416,8 +599,8 @@
                 </div>
             </div>
             
-            <div class="col-lg-4">
-                <div class="dashboard-card mb-4" data-aos="fade-left">
+            <div class="col-lg-3">
+                <div class="dashboard-card" data-aos="fade-left">
                     <div class="dashboard-profile">
                         <div class="dashboard-profile__avatar">
                             <img src="{{ current_user.profile_pic }}" alt="{{ current_user.name }}">
@@ -426,10 +609,6 @@
                         <p class="dashboard-profile__email">{{ current_user.email }}</p>
                         
                         <div class="dashboard-profile__stats">
-                            <div class="profile-stat">
-                                <div class="profile-stat__label">Account Type</div>
-                                <div class="profile-stat__value text-capitalize">{{ current_user.provider }}</div>
-                            </div>
                             <div class="profile-stat">
                                 <div class="profile-stat__label">Member Since</div>
                                 <div class="profile-stat__value">{{ current_user.created_at.strftime('%b %d, %Y') }}</div>
@@ -443,43 +622,6 @@
                         <a href="{{ url_for('profile') }}" class="btn btn-outline-primary mb-3 w-100">
                             <i class="fas fa-user me-2"></i> View Profile
                         </a>
-                        
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger w-100">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="dashboard-card" data-aos="fade-left" data-aos-delay="100">
-                    <div class="dashboard-card__header">
-                        <h3 class="dashboard-card__title">
-                            <i class="fas fa-lightbulb"></i> Quick Tips
-                        </h3>
-                    </div>
-                    <div class="dashboard-card__body">
-                        <div class="tip-item">
-                            <div class="tip-icon">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                            <h4 class="tip-title">Best Photo Practices</h4>
-                            <p class="tip-text">Take clear, well-lit photos of your car damage from multiple angles for the most accurate AI assessment.</p>
-                        </div>
-                        
-                        <div class="tip-item">
-                            <div class="tip-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <h4 class="tip-title">Save Your Reports</h4>
-                            <p class="tip-text">Download and save PDF reports for your insurance claims or when selling your car to provide verification.</p>
-                        </div>
-                        
-                        <div class="tip-item">
-                            <div class="tip-icon">
-                                <i class="fas fa-sync-alt"></i>
-                            </div>
-                            <h4 class="tip-title">Regular Updates</h4>
-                            <p class="tip-text">Estimate your car's value every 6 months to track changes in market value and maintain accurate records.</p>
-                        </div>
                     </div>
                 </div>
             </div>
