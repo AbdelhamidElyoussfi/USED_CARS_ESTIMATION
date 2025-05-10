@@ -4,7 +4,7 @@ A full-stack web application that provides car price estimation based on damage 
 
 ## Features
 
-- 🔐 User authentication with Google and Facebook OAuth 2.0
+- 🔐 User authentication with Google OAuth 2.0
 - 🖼️ Image upload with drag-and-drop support and animated preview
 - 🧠 Integration of multiple machine learning models for:
   - Car type validation
@@ -48,8 +48,6 @@ pip install -r requirements.txt
 SECRET_KEY=your-secure-secret-key
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
-FACEBOOK_CLIENT_ID=your-facebook-app-id
-FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
 ```
 
 5. Initialize the database:
