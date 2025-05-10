@@ -2,6 +2,33 @@
 
 A full-stack web application that provides car price estimation based on damage analysis and car features using machine learning models.
 
+## Templates
+
+# Home page before login
+![image](https://github.com/user-attachments/assets/77c683cd-11b2-4783-94ce-ae4861555af5)
+
+# Login 
+![image](https://github.com/user-attachments/assets/236f6c4d-5770-4012-9fb1-71a4f9bf377a)
+
+# Home page after login
+![image](https://github.com/user-attachments/assets/56bbbc9f-7ed0-45cb-8f6a-e9a08376229d)
+
+# Estimate from
+![image](https://github.com/user-attachments/assets/afc15a0c-3062-4590-98a4-7369e93a01bc)
+
+# Result damage
+![image](https://github.com/user-attachments/assets/08c56074-557b-4cc1-ad98-2ad7b1ebc83f)
+
+# Dashboard 
+![image](https://github.com/user-attachments/assets/6e8c599e-4be5-4d19-87ed-3de4a5dceda5)
+
+# About
+![image](https://github.com/user-attachments/assets/cc56194a-2234-4189-ba16-72cf142652c6)
+
+# Profile
+![image](https://github.com/user-attachments/assets/27f4a8b8-fb15-4cdb-b45c-1f75ea8823bc)
+
+
 ## Features
 
 - 🔐 User authentication with Google OAuth 2.0
