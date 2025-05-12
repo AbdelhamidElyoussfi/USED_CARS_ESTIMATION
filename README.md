@@ -13,7 +13,7 @@ A full-stack web application that provides car price estimation based on damage 
 ### Home page after login
 ![image](https://github.com/user-attachments/assets/56bbbc9f-7ed0-45cb-8f6a-e9a08376229d)
 
-### Estimate from
+### Estimate form
 ![image](https://github.com/user-attachments/assets/afc15a0c-3062-4590-98a4-7369e93a01bc)
 
 ### Result damage
